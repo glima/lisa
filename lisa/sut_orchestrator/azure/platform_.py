@@ -669,7 +669,8 @@ class AzurePlatform(Platform):
 
         if not subscription:
             raise LisaException(
-                f"cannot find subscription id: '{self.subscription_id}'"
+                f"cannot find subscription id: '{self.subscription_id}', "
+                f"make sure exists and current account can access"
             )
         self._log.info(f"connected to subscription: '{subscription.display_name}'")
 
