@@ -170,6 +170,11 @@ class AzureNodeSchema:
         gallery: Optional[AzureVmGallerySchema] = self._gallery
         if not gallery:
             if isinstance(self.gallery_raw, dict):
+                # no impact for deployment, make the info consistent
+                # to aviod info mismatched issue
+                self.gallery_raw = dict(
+                    (k, v.lower()) for k, v in self.gallery_raw.items()
+                )
                 gallery = AzureVmGallerySchema.schema().load(  # type: ignore
                     self.gallery_raw
                 )
@@ -180,7 +185,9 @@ class AzureNodeSchema:
                 assert isinstance(
                     self.gallery_raw, str
                 ), f"actual: {type(self.gallery_raw)}"
-                gallery_strings = re.split(r"[:\s]+", self.gallery_raw.strip())
+                # no impact for deployment, make the info consistent
+                # to aviod info mismatched issue
+                gallery_strings = re.split(r"[:\s]+", self.gallery_raw.strip().lower())
 
                 if len(gallery_strings) == 4:
                     gallery = AzureVmGallerySchema(*gallery_strings)
