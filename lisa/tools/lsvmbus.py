@@ -128,7 +128,9 @@ class Lsvmbus(Tool):
             package_name = "linux-cloud-tools-common"
         if package_name:
             linux_os.install_packages(package_name)
-        else:
+        if not self._check_exists():
+            if package_name:
+                self._log.info(f"{package_name} not found or failed to install.")
             wget_tool = self.node.tools[Wget]
             file_path = wget_tool.get(self._lsvmbus_repo, "$HOME/.local/bin")
             # make the download file executable

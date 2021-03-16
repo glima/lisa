@@ -226,9 +226,12 @@ class Redhat(Linux):
     def name_pattern(cls) -> Pattern[str]:
         return re.compile("^rhel|Red|Scientific|acronis|Actifio$")
 
+    def _initialize_package_installation(self) -> None:
+        self._node.execute("yum -y update", sudo=True)
+
     def _install_packages(self, packages: Union[List[str]]) -> None:
         self._node.execute(
-            f"DEBIAN_FRONTEND=noninteractive yum install -y {' '.join(packages)}",
+            f"yum install -y {' '.join(packages)}",
             sudo=True,
         )
 
