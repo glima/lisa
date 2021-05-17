@@ -381,17 +381,45 @@ class SshShell(InitializableMixin):
         path_str = self._purepath_to_str(path)
         self._inner_shell.chown(path_str, uid, gid)
 
-    def copy(self, local_path: PurePath, node_path: PurePath) -> None:
+    def copy(
+        self,
+        local_path: PurePath,
+        node_path: PurePath,
+        consistent: Optional[bool] = None,
+    ) -> None:
+        """Put a file on the remote host.
+
+        Mind that if you set consistent to True, the file will be
+        copied to a temporary file (at the destiny's *parent
+        directory*) and then POSIX rename function will be used to
+        rename it. The ownership and the permissions of the original
+        'remote_path' are preserved. However, if the original
+        'remote_path' has read-only permissions and you still have
+        write permissions to the directory, the 'remote_path' will be
+        overwritten nevertheless due to the logic of POSIX
+        rename. That argument is set to False on non-POSIX systems, as
+        it may fail. You can also change it yourself from the default
+        value of True, on POSIX systems, where the availability of
+        writes on the parent target directory are prohibitive.
+
+        :param local_path: to the file
+        :param remote_path: to the file
+        :param consistent: if set, copies to a temporary remote file
+        first, and then renames it.
+        :return:
+        """
         self.mkdir(node_path.parent, parents=True, exist_ok=True)
         self.initialize()
         assert self._inner_shell
         local_path_str = self._purepath_to_str(local_path)
         node_path_str = self._purepath_to_str(node_path)
+        if consistent is None:
+            consistent = self.is_posix
         self._inner_shell.put(
             local_path_str,
             node_path_str,
             create_directories=True,
-            consistent=self.is_posix,
+            consistent=consistent,
         )
 
     def _purepath_to_str(
