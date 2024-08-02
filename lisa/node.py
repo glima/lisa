@@ -287,6 +287,7 @@ class Node(subclasses.BaseClassWithRunbookMixin, ContextMixin, InitializableMixi
         cwd: Optional[PurePath] = None,
         update_envs: Optional[Dict[str, str]] = None,
         encoding: str = "",
+        command_splitter: Callable[..., List[str]] = process_command,
     ) -> Process:
         self.initialize()
         if isinstance(self, RemoteNode):
