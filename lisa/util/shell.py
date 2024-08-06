@@ -53,6 +53,7 @@ def minimal_generate_run_command(  # type: ignore
     update_env: Optional[Dict[str, str]] = None,
     new_process_group: bool = False,
 ) -> str:
+    print("XXX: running minimal_generate_run_command")
     return " ".join(map(minimal_escape_sh, command_args))
 
 
@@ -269,6 +270,7 @@ class SshShell(InitializableMixin):
             shell_type = spur.ssh.ShellTypes.sh
             # it doesn't support bash. Use minimal shell type
             if stdout_content and "Unknown syntax" in stdout_content:
+                print("XXX: setting shell type to minimal")
                 shell_type = spur.ssh.ShellTypes.minimal
 
         sock = self._establish_jump_boxes(
@@ -298,11 +300,13 @@ class SshShell(InitializableMixin):
             sftp_opener=spur_ssh_shell._open_sftp_client
         )
         self._inner_shell = spurplus.SshShell(spur_ssh_shell=spur_ssh_shell, sftp=sftp)
+        print(f"XXX: branch on minimal shell should be taken. type is {shell_type}")
         if shell_type == spur.ssh.ShellTypes.minimal:
             # Dynamically override that object's method. Here, we don't enclose every
             # shell token under single quotes anymore. That's an assumption from spur
             # that minimal shells will still be POSIX compliant--not true for some
             # cases for LISA users.
+            print("XXX: taken!")
             func_type = type(spur.ssh.ShellTypes.minimal.generate_run_command)
             self._inner_shell._spur._shell_type.generate_run_command = func_type(
                 minimal_generate_run_command,
@@ -379,6 +383,7 @@ class SshShell(InitializableMixin):
                 # Permission denied'' as integer)"
                 # Except CommandInitializationError then use minimal shell type.
                 if not have_tried_minimal_type:
+                    print(f"XXX: not have_tried_minimal_type, setting type to minimal. exception is {identifier}")
                     self._inner_shell._spur._shell_type = spur.ssh.ShellTypes.minimal
                     have_tried_minimal_type = True
                     matched = _spawn_initialization_error_pattern.search(
@@ -388,6 +393,7 @@ class SshShell(InitializableMixin):
                         self.spawn_initialization_error_string = matched.group(
                             "linux_profile_error"
                         )
+                    print(f"XXX: spawn_initialization_error_string is now {self.spawn_initialization_error_string}")
                 else:
                     raise identifier
         return process

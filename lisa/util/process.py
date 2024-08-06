@@ -523,6 +523,7 @@ class Process:
             and self._shell._inner_shell._spur._shell_type
             == spur.ssh.ShellTypes.minimal
         ):
+            print("XXX: _filter_profile_error: shell is minimal")
             raw_input = raw_input.replace(
                 f"{self._shell.spawn_initialization_error_string}\n", ""
             )
