@@ -382,6 +382,7 @@ class SshShell(InitializableMixin):
                 # /etc/profile.d/clover.sh:line 10:/opt/clover/bin/prepare-hostname.sh:
                 # Permission denied'' as integer)"
                 # Except CommandInitializationError then use minimal shell type.
+                print(f"XXX: spur conn exception is {identifier}")
                 if not have_tried_minimal_type:
                     print(f"XXX: not have_tried_minimal_type, setting type to minimal. exception is {identifier}")
                     self._inner_shell._spur._shell_type = spur.ssh.ShellTypes.minimal
