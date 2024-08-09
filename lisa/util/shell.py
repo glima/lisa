@@ -261,6 +261,7 @@ class SshShell(InitializableMixin):
         # it's  enough to detect os.
         stdout_content = stdout.readline()
         stdout.close()
+        print(f'XXX: stdout content on first shell contact is {stdout_content}')
 
         if stdout_content and "Windows" in stdout_content:
             self.is_posix = False
@@ -347,6 +348,7 @@ class SshShell(InitializableMixin):
 
         while True:
             try:
+                print(f"XXX: spur conn: shell type is {self._inner_shell._spur._shell_type}")
                 if self._inner_shell._spur._shell_type == spur.ssh.ShellTypes.minimal:
                     # minimal shell type doesn't support store_pid
                     store_pid = False
