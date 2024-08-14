@@ -395,6 +395,7 @@ class SshShell(InitializableMixin):
                     print(f"XXX: not have_tried_minimal_type, setting type to minimal. exception is {identifier}")
                     self._inner_shell._spur._shell_type = spur.ssh.ShellTypes.minimal
                     have_tried_minimal_type = True
+                    print(f'XXX: now trying to match {str(identifier)} over {_spawn_initialization_error_pattern}')
                     matched = _spawn_initialization_error_pattern.search(
                         str(identifier)
                     )
