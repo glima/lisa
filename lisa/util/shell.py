@@ -399,10 +399,12 @@ class SshShell(InitializableMixin):
                         str(identifier)
                     )
                     if matched:
+                        print('XXX: matched!')
                         self.spawn_initialization_error_string = matched.group(
                             "linux_profile_error"
                         )
                     else:
+                        print('XXX: _minimize_shell() to be called')
                         _minimize_shell(self._inner_shell)
                     print(f"XXX: spawn_initialization_error_string is now {self.spawn_initialization_error_string}")
                 else:
