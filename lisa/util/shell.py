@@ -40,9 +40,23 @@ _spawn_initialization_error_pattern = re.compile(
     r"(Failed to parse line \'b[\'\"](?P<linux_profile_error>.*?)[\'\"]\' as integer)"
 )
 
-
 def minimal_escape_sh(value: str) -> str:
-    return value.replace("'", "'\\''")
+    # Commands can have either injected quotes (by shlex.split()),
+    # which we *don't want* in a minimal shell state (that is a
+    # bash/POSIX-ism), or more legit quote usage, one example being
+    # enclosing of space separated tokens to feed an outer context
+    # (e.g. sh -c 'cat /etc/shadow | grep user'). Let's get rid of the
+    # obvious ones here.
+
+    # single quotes around words without spaces
+    pattern = r"'(\S+)'"
+
+    # Replace matched with only our group: inner quoted part
+    return re.sub(pattern, r"\1", value)
+
+
+# def minimal_escape_sh(value: str) -> str:
+#     return value.replace("'", "'\\''")
 
 
 def minimal_generate_run_command(  # type: ignore
