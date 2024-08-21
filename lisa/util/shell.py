@@ -41,6 +41,7 @@ _spawn_initialization_error_pattern = re.compile(
 )
 
 def minimal_escape_sh(value: str) -> str:
+    print(f"value str on escape is {value}")
     # Commands can have either injected quotes (by shlex.split()),
     # which we *don't want* in a minimal shell state (that is a
     # bash/POSIX-ism), or more legit quote usage, one example being
@@ -67,7 +68,7 @@ def minimal_generate_run_command(  # type: ignore
     update_env: Optional[Dict[str, str]] = None,
     new_process_group: bool = False,
 ) -> str:
-    print("XXX: running minimal_generate_run_command")
+    print(f"XXX: running minimal_generate_run_command. final command to be {' '.join(map(minimal_escape_sh, command_args))}")
     return " ".join(map(minimal_escape_sh, command_args))
 
 
@@ -408,6 +409,8 @@ class SshShell(InitializableMixin):
                 if not have_tried_minimal_type:
                     print(f"XXX: not have_tried_minimal_type, setting type to minimal. exception is {identifier}")
                     self._inner_shell._spur._shell_type = spur.ssh.ShellTypes.minimal
+                    print('XXX: _minimize_shell() to be called')
+                    _minimize_shell(self._inner_shell)
                     have_tried_minimal_type = True
                     print(f'XXX: now trying to match {str(identifier)} over {_spawn_initialization_error_pattern}')
                     matched = _spawn_initialization_error_pattern.search(
@@ -418,9 +421,6 @@ class SshShell(InitializableMixin):
                         self.spawn_initialization_error_string = matched.group(
                             "linux_profile_error"
                         )
-                    else:
-                        print('XXX: _minimize_shell() to be called')
-                        _minimize_shell(self._inner_shell)
                     print(f"XXX: spawn_initialization_error_string is now {self.spawn_initialization_error_string}")
                 else:
                     raise identifier
